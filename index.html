@@ -159,7 +159,7 @@ tr.nos .cuenta { font-weight: 700; color: var(--accent); }
   .kpi:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
 }
 @media (max-width: 760px) {
-  .app { grid-template-columns: minmax(0, 1fr); }
+  .app { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); align-content: start; }
   aside { position: static; height: auto; padding-block: 16px 10px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
   .marca { padding: 0 0 12px; }
   nav { flex-direction: row; overflow-x: auto; gap: 4px; scrollbar-width: none; }
