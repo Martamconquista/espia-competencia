@@ -1,0 +1,513 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Espía Competencia</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Espía Competencia">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="theme-color" content="#0b0b0b">
+<meta name="robots" content="noindex, nofollow">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+/* Layout: barra lateral negra + vistas por sección; blanco, negro y el granate de marca #753E3B. */
+:root {
+  --bg: #ffffff;
+  --panel: #ffffff;
+  --panel-2: #f6f4f4;
+  --line: #e8e4e3;
+  --ink: #0b0b0b;
+  --ink-2: #545050;
+  --ink-3: #959090;
+  --side: #0b0b0b;
+  --side-ink: #f4f2f2;
+  --side-ink-2: #9d9797;
+  --side-hover: #1c1a1a;
+  --accent: #753e3b;          /* Mari Carmen */
+  --accent-soft: #f4ecec;
+  --comp: #c4bebd;            /* competencia */
+  --dark-series: #0b0b0b;     /* segunda serie */
+  --grid: #f0eded;
+  --ok: #1f9d55;
+  --font: Inter, "Helvetica Neue", Arial, system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0b0b0b; --panel: #131313; --panel-2: #1b1a1a; --line: #262424;
+    --ink: #f5f4f4; --ink-2: #b4afaf; --ink-3: #777272;
+    --side: #000000; --side-ink: #f4f2f2; --side-ink-2: #8d8787; --side-hover: #171616;
+    --accent: #b8706c; --accent-soft: #2a1c1b; --comp: #4d4949; --dark-series: #f2f0f0; --grid: #1f1e1e; --ok: #4ade80;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0b0b0b; --panel: #131313; --panel-2: #1b1a1a; --line: #262424;
+  --ink: #f5f4f4; --ink-2: #b4afaf; --ink-3: #777272;
+  --side: #000000; --side-ink: #f4f2f2; --side-ink-2: #8d8787; --side-hover: #171616;
+  --accent: #b8706c; --accent-soft: #2a1c1b; --comp: #4d4949; --dark-series: #f2f0f0; --grid: #1f1e1e; --ok: #4ade80;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font: 13px/1.5 var(--font); -webkit-font-smoothing: antialiased; }
+a { color: inherit; }
+button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.app { display: grid; grid-template-columns: 236px minmax(0, 1fr); min-height: 100vh; }
+
+aside { background: var(--side); color: var(--side-ink); padding: 22px 14px 18px; position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; }
+.marca { display: flex; align-items: center; gap: 11px; padding: 0 8px 26px; }
+.logo { width: 32px; height: 32px; border-radius: 8px; background: var(--accent); color: #fff; display: grid; place-items: center; flex: none; }
+.logo svg { width: 17px; height: 17px; }
+.marca b { display: block; font-size: 14px; font-weight: 600; letter-spacing: -.01em; }
+.marca span { display: block; font-size: 11px; color: var(--side-ink-2); letter-spacing: .02em; }
+nav { display: flex; flex-direction: column; gap: 2px; }
+nav a { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 7px; text-decoration: none; color: var(--side-ink-2); font-weight: 500; }
+nav a svg { width: 16px; height: 16px; flex: none; stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+nav a:hover { background: var(--side-hover); color: var(--side-ink); }
+nav a.on { background: var(--side-hover); color: var(--side-ink); box-shadow: inset 2px 0 0 var(--accent); }
+.lateral-pie { margin-top: auto; padding: 14px 10px 0; border-top: 1px solid #262424; font-size: 11.5px; color: var(--side-ink-2); line-height: 1.7; }
+.vivo { display: inline-flex; align-items: center; gap: 7px; color: var(--side-ink); font-weight: 500; }
+.vivo i { width: 6px; height: 6px; border-radius: 50%; background: var(--ok); }
+
+main { min-width: 0; }
+.barra { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 20px; padding-left: max(32px, env(safe-area-inset-left, 0px)); padding-right: max(32px, env(safe-area-inset-right, 0px)); border-bottom: 1px solid var(--line); background: var(--panel); }
+.barra h1 { font-size: 18px; font-weight: 600; margin: 0; letter-spacing: -.02em; text-wrap: balance; }
+.barra p { margin: 2px 0 0; color: var(--ink-3); font-size: 12px; }
+.boton { font: inherit; font-weight: 600; font-size: 12.5px; display: inline-flex; align-items: center; gap: 7px; border: 0; background: var(--ink); color: var(--bg); padding: 8px 14px; border-radius: 7px; cursor: pointer; white-space: nowrap; }
+.boton:hover { background: var(--accent); color: #fff; }
+.boton svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.boton.girando svg { animation: gira .8s linear infinite; }
+@keyframes gira { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .boton.girando svg { animation: none; } }
+.contenido { padding-block: 24px 56px; padding-left: max(32px, env(safe-area-inset-left, 0px)); padding-right: max(32px, env(safe-area-inset-right, 0px)); max-width: 1400px; }
+.vista { display: none; }
+.vista.on { display: block; }
+
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); background: var(--panel); border: 1px solid var(--line); border-radius: 10px; margin-bottom: 18px; overflow: hidden; }
+.kpi { padding: 18px 20px; border-right: 1px solid var(--line); min-width: 0; }
+.kpi:last-child { border-right: 0; }
+.kpi .lbl { font-size: 11px; color: var(--ink-3); font-weight: 600; text-transform: uppercase; letter-spacing: .07em; }
+.kpi .val { font-size: 28px; font-weight: 600; letter-spacing: -.03em; margin: 8px 0 4px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.kpi .val small { font-size: 14px; color: var(--ink-2); font-weight: 500; margin-left: 3px; letter-spacing: 0; }
+.kpi .nota { font-size: 12px; color: var(--ink-2); }
+.kpi .nota b { color: var(--ink); font-weight: 600; }
+.kpi.marca-kpi .val { color: var(--accent); }
+
+.grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 16px; }
+.card { grid-column: span 6; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; min-width: 0; }
+.c12 { grid-column: span 12; } .c8 { grid-column: span 8; } .c4 { grid-column: span 4; } .c7 { grid-column: span 7; } .c5 { grid-column: span 5; }
+.card-cab { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; padding: 16px 20px 0; }
+.card h2 { font-size: 13.5px; font-weight: 600; margin: 0; letter-spacing: -.01em; }
+.card .desc { font-size: 12px; color: var(--ink-3); margin: 3px 0 0; max-width: 560px; }
+.card-cuerpo { padding: 14px 20px 18px; }
+.leyenda { display: flex; gap: 14px; flex-wrap: wrap; font-size: 11.5px; color: var(--ink-2); }
+.leyenda span { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.leyenda i { width: 9px; height: 9px; border-radius: 2px; }
+.lienzo { position: relative; height: 320px; }
+.lienzo.alto { height: 360px; }
+.aviso { font-size: 12px; color: var(--ink-3); padding: 10px 12px; border: 1px dashed var(--line); border-radius: 8px; margin-top: 12px; }
+
+.tabla-scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+th { text-align: left; font-size: 10.5px; color: var(--ink-3); font-weight: 600; text-transform: uppercase; letter-spacing: .07em; padding: 10px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td { padding: 11px 12px; border-bottom: 1px solid var(--grid); vertical-align: top; }
+tbody tr:last-child td { border-bottom: 0; }
+tbody tr:hover td { background: var(--panel-2); }
+.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.cuenta { display: inline-flex; align-items: center; gap: 8px; font-weight: 500; white-space: nowrap; }
+.cuenta i { width: 7px; height: 7px; border-radius: 2px; background: var(--comp); flex: none; }
+tr.nos .cuenta i { background: var(--accent); }
+tr.nos .cuenta { font-weight: 700; color: var(--accent); }
+.etq { display: inline-block; font-size: 11px; font-weight: 500; padding: 1px 7px; border-radius: 4px; border: 1px solid var(--line); color: var(--ink-2); white-space: nowrap; }
+.texto { color: var(--ink-2); min-width: 280px; max-width: 520px; }
+.ver { color: var(--ink-3); text-decoration: none; font-weight: 600; white-space: nowrap; }
+.ver:hover { color: var(--accent); }
+.tabla-card .card-cuerpo { padding: 6px 8px 8px; }
+
+.informe { max-width: 820px; padding: 30px 34px 36px; }
+.informe h2 { font-size: 21px; font-weight: 700; letter-spacing: -.025em; margin: 0 0 6px; text-wrap: balance; }
+.informe h3 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--accent); margin: 28px 0 10px; }
+.informe h4 { font-size: 13px; margin: 18px 0 6px; }
+.informe p, .informe li { color: var(--ink-2); font-size: 13.5px; line-height: 1.7; max-width: 68ch; }
+.informe strong { color: var(--ink); font-weight: 600; }
+.informe ol, .informe ul { padding-left: 20px; }
+.informe li { margin: 5px 0; }
+.informe li::marker { color: var(--accent); font-weight: 600; }
+.informe table { margin: 10px 0; }
+.informe code { font-size: 12px; background: var(--panel-2); padding: 1px 5px; border-radius: 4px; }
+.informe a { color: var(--accent); }
+.informe .fecha { font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: .08em; margin: 0 0 14px; }
+.vacio { color: var(--ink-3); text-align: center; padding: 40px 20px; }
+.acceso { max-width: 360px; margin: 48px auto; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 28px 24px; display: flex; flex-direction: column; gap: 12px; }
+.acceso h2 { margin: 0; font-size: 17px; letter-spacing: -.01em; }
+.acceso p { margin: 0; color: var(--ink-2); font-size: 13px; }
+.acceso input { font: inherit; font-size: 16px; padding: 11px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--ink); }
+.acceso input:focus { outline: 2px solid var(--accent); outline-offset: 0; border-color: var(--accent); }
+.acceso .boton { justify-content: center; padding: 11px 14px; font-size: 14px; }
+.acceso .error { color: var(--accent); font-weight: 600; min-height: 1.2em; }
+
+@media (max-width: 1100px) {
+  .c8, .c4, .c7, .c5, .card { grid-column: span 12; }
+  .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .kpi:nth-child(2) { border-right: 0; }
+  .kpi:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+}
+@media (max-width: 760px) {
+  .app { grid-template-columns: minmax(0, 1fr); }
+  aside { position: static; height: auto; padding-block: 16px 10px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .marca { padding: 0 0 12px; }
+  nav { flex-direction: row; overflow-x: auto; gap: 4px; scrollbar-width: none; }
+  nav a { white-space: nowrap; padding: 7px 11px; }
+  nav a svg { display: none; }
+  nav a.on { box-shadow: inset 0 -2px 0 var(--accent); }
+  .lateral-pie { display: none; }
+  .barra { padding-block: 14px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .contenido { padding-block: 16px 40px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .kpi { padding: 14px 14px; }
+  .kpi .val { font-size: 22px; }
+  .card-cab { padding: 14px 14px 0; }
+  .card-cuerpo { padding: 12px 14px 14px; }
+  .informe { padding: 22px 18px; }
+  .lienzo { height: 300px; }
+}
+</style>
+
+<div class="app">
+  <aside>
+    <div class="marca">
+      <div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg></div>
+      <div><b>Espía Competencia</b><span>Mari Carmen · Fertilidad natural</span></div>
+    </div>
+    <nav id="nav">
+      <a href="#resumen" data-v="resumen"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg>Resumen</a>
+      <a href="#publicidad" data-v="publicidad"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Publicidad</a>
+      <a href="#contenido" data-v="contenido"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h13"/></svg>Temas y embudos</a>
+      <a href="#anuncios" data-v="anuncios"><svg viewBox="0 0 24 24"><path d="M4 9v6h4l6 4V5L8 9H4z"/><path d="M18 9.5a3.5 3.5 0 010 5"/></svg>Anuncios</a>
+      <a href="#informe" data-v="informe"><svg viewBox="0 0 24 24"><path d="M7 3.5h7l4 4V20.5H7z"/><path d="M14 3.5V8h4M10 13h5M10 16.5h5"/></svg>Informe semanal</a>
+      <a href="#cuentas" data-v="cuentas"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.5 3.4-5.5 6.5-5.5s5.7 2 6.5 5.5"/><path d="M16 4.8a3.5 3.5 0 010 6.4M18.5 14.8c1.6.9 2.6 2.6 3 5.2"/></svg>Cuentas</a>
+    </nav>
+    <div class="lateral-pie" id="pieLateral"></div>
+  </aside>
+
+  <main>
+    <div class="barra">
+      <div><h1 id="titulo">Resumen</h1><p id="subtitulo">Cargando datos…</p></div>
+      <button class="boton" id="recargar" type="button"><svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 10-2.3 5.7M20 4v7h-7"/></svg>Actualizar</button>
+    </div>
+    <div class="contenido" id="contenido">
+
+      <section class="vista" id="v-resumen">
+        <div class="kpis" id="kpis"></div>
+        <div class="grid">
+          <div class="card c7">
+            <div class="card-cab"><div><h2>Alcance publicitario</h2><p class="desc">Personas alcanzadas por los 5 anuncios principales de cada cuenta.</p></div>
+              <div class="leyenda"><span><i style="background:var(--accent)"></i>Mari Carmen</span><span><i style="background:var(--comp)"></i>Competencia</span></div></div>
+            <div class="card-cuerpo"><div class="lienzo"><canvas id="rAlcance"></canvas></div></div>
+          </div>
+          <div class="card c5">
+            <div class="card-cab"><div><h2>Destino del tráfico</h2><p class="desc">Adónde llevan sus anuncios (% de anuncios activos).</p></div>
+              <div class="leyenda"><span><i style="background:var(--accent)"></i>Mari Carmen</span><span><i style="background:var(--dark-series)"></i>Competencia</span></div></div>
+            <div class="card-cuerpo"><div class="lienzo"><canvas id="rEmbudos"></canvas></div></div>
+          </div>
+          <div class="card c12 tabla-card">
+            <div class="card-cab"><div><h2>Anuncios con más alcance</h2><p class="desc">Los 5 anuncios activos más vistos del nicho.</p></div><a class="ver" href="#anuncios">Ver todos →</a></div>
+            <div class="card-cuerpo"><div class="tabla-scroll" id="rTop"></div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="vista" id="v-publicidad">
+        <div class="grid">
+          <div class="card">
+            <div class="card-cab"><div><h2>Alcance de los anuncios principales</h2><p class="desc">Suma del alcance en la UE de los 5 anuncios con más impresiones.</p></div></div>
+            <div class="card-cuerpo"><div class="lienzo"><canvas id="cAlcance"></canvas></div></div>
+          </div>
+          <div class="card">
+            <div class="card-cab"><div><h2>Inversión estimada</h2><p class="desc" id="descInversion"></p></div></div>
+            <div class="card-cuerpo"><div class="lienzo"><canvas id="cInversion"></canvas></div></div>
+          </div>
+          <div class="card c8">
+            <div class="card-cab"><div><h2>Anuncios nuevos y veteranos</h2><p class="desc">Veterano = 30 días o más encendido: casi seguro es rentable. Muchos nuevos a la vez = lanzamiento.</p></div>
+              <div class="leyenda"><span><i style="background:var(--dark-series)"></i>Nuevos</span><span><i style="background:var(--comp)"></i>Veteranos</span></div></div>
+            <div class="card-cuerpo"><div class="lienzo alto"><canvas id="cActivos"></canvas></div></div>
+          </div>
+          <div class="card c4">
+            <div class="card-cab"><div><h2>Evolución de anuncios activos</h2><p class="desc">Mari Carmen y las 3 cuentas con más anuncios.</p></div></div>
+            <div class="card-cuerpo"><div class="leyenda" id="leyEvol" style="margin-bottom:10px"></div>
+              <div class="lienzo"><canvas id="cEvolucion"></canvas></div>
+              <div class="aviso" id="avisoEvol" hidden>Solo hay un día de datos. La línea se completa con la recogida diaria.</div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="vista" id="v-contenido">
+        <div class="grid">
+          <div class="card">
+            <div class="card-cab"><div><h2>Temas de los anuncios</h2><p class="desc">% de anuncios activos que tratan cada tema (uno puede tratar varios).</p></div>
+              <div class="leyenda"><span><i style="background:var(--accent)"></i>Mari Carmen</span><span><i style="background:var(--dark-series)"></i>Competencia</span></div></div>
+            <div class="card-cuerpo"><div class="lienzo alto"><canvas id="cTemas"></canvas></div></div>
+          </div>
+          <div class="card">
+            <div class="card-cab"><div><h2>Destino del tráfico</h2><p class="desc">Perfil, web de venta, taller gratis, regalo, reto de pago o tienda.</p></div>
+              <div class="leyenda"><span><i style="background:var(--accent)"></i>Mari Carmen</span><span><i style="background:var(--dark-series)"></i>Competencia</span></div></div>
+            <div class="card-cuerpo"><div class="lienzo alto"><canvas id="cEmbudos"></canvas></div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="vista" id="v-anuncios">
+        <div class="grid">
+          <div class="card c12 tabla-card">
+            <div class="card-cab"><div><h2>Anuncios con más alcance</h2><p class="desc">Anuncios activos ordenados por personas alcanzadas en la UE.</p></div></div>
+            <div class="card-cuerpo"><div class="tabla-scroll" id="tTop"></div></div>
+          </div>
+          <div class="card c12 tabla-card">
+            <div class="card-cab"><div><h2>Veteranos de la competencia</h2><p class="desc">Anuncios encendidos 30 días o más: la señal más fiable de que les dan dinero.</p></div></div>
+            <div class="card-cuerpo"><div class="tabla-scroll" id="tVeteranos"></div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="vista" id="v-informe">
+        <div class="card informe" id="informe"></div>
+      </section>
+
+      <section class="vista" id="v-cuentas">
+        <div class="card c12 tabla-card">
+          <div class="card-cab"><div><h2>Todas las cuentas</h2><p class="desc" id="descCuentas"></p></div></div>
+          <div class="card-cuerpo"><div class="tabla-scroll" id="tCuentas"></div></div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<script>
+// Datos: en el Mac llegan de datos_dashboard.js (misma carpeta); en la versión publicada, de datos.json.
+const RECARGA_MIN = 5;
+const TITULOS = { resumen: 'Resumen', publicidad: 'Publicidad', contenido: 'Temas y embudos', anuncios: 'Anuncios', informe: 'Informe semanal', cuentas: 'Cuentas' };
+let DATOS = null, pintadas = {};
+
+function cargarScript() {
+  return new Promise((ok, mal) => { const s = document.createElement('script'); s.src = 'datos_dashboard.js?t=' + Date.now();
+    s.onload = () => window.ESPIA ? ok(window.ESPIA) : mal(); s.onerror = mal; document.head.appendChild(s); });
+}
+// En la web del móvil los datos van cifrados (datos.enc.json): se pide la contraseña una vez y se recuerda en el teléfono.
+const b64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function descifrar(enc, clave) {
+  const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(clave), 'PBKDF2', false, ['deriveKey']);
+  const llave = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt: b64(enc.salt), iterations: enc.iter, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+  const claro = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64(enc.iv) }, llave, b64(enc.ct));
+  return JSON.parse(new TextDecoder().decode(claro));
+}
+const leerClave = () => { try { return localStorage.getItem('espia_clave'); } catch (e) { return null; } };
+const guardarClave = c => { try { localStorage.setItem('espia_clave', c); } catch (e) {} };
+function pedirClave(enc) {
+  return new Promise(ok => {
+    const caja = document.getElementById('contenido');
+    caja.querySelectorAll('.vista').forEach(v => v.classList.remove('on'));
+    const f = el('form', { class: 'acceso', id: 'acceso' },
+      el('h2', { text: 'Espía Competencia' }), el('p', { text: 'Escribe la contraseña del panel. Solo te la pediremos esta vez en este móvil.' }),
+      el('input', { id: 'clave', type: 'password', autocomplete: 'current-password', placeholder: 'Contraseña', required: '' }),
+      el('p', { class: 'error', id: 'errorClave' }), el('button', { class: 'boton', type: 'submit', text: 'Entrar' }));
+    caja.prepend(f);
+    document.getElementById('subtitulo').textContent = 'Acceso privado';
+    f.addEventListener('submit', async ev => {
+      ev.preventDefault();
+      const c = document.getElementById('clave').value.trim();
+      try { const D = await descifrar(enc, c); guardarClave(c); f.remove(); ok(D); }
+      catch (e) { document.getElementById('errorClave').textContent = 'Contraseña incorrecta. Revísala y prueba otra vez.'; }
+    });
+    document.getElementById('clave').focus();
+  });
+}
+async function cargarDatos() {
+  try {
+    const r = await fetch('datos.enc.json?t=' + Date.now(), { cache: 'no-store' });
+    if (r.ok) {
+      const enc = await r.json(), c = leerClave();
+      if (c) { try { return await descifrar(enc, c); } catch (e) {} }
+      return await pedirClave(enc);
+    }
+  } catch (e) {}
+  try { const r = await fetch('datos.json?t=' + Date.now(), { cache: 'no-store' }); if (r.ok) return await r.json(); } catch (e) {}
+  return cargarScript();
+}
+async function actualizar() {
+  if (document.getElementById('acceso')) return;   // esperando la contraseña
+  const b = document.getElementById('recargar'); b.classList.add('girando');
+  try {
+    const D = await cargarDatos();
+    DATOS = D; pintadas = {};
+    Object.values(Chart.instances || {}).forEach(c => c.destroy());
+    ['kpis', 'rTop', 'tTop', 'tVeteranos', 'tCuentas', 'informe', 'leyEvol'].forEach(id => { document.getElementById(id).innerHTML = ''; });
+    comunes(D); mostrar(true);
+  } catch (e) {
+    document.getElementById('subtitulo').textContent = 'No se han podido cargar los datos. Prueba de nuevo en un momento.';
+  }
+  b.classList.remove('girando');
+}
+document.getElementById('recargar').addEventListener('click', actualizar);
+setInterval(actualizar, RECARGA_MIN * 60 * 1000);
+
+function mostrar(sinScroll) {
+  const v = (location.hash || '#resumen').slice(1);
+  const vista = TITULOS[v] ? v : 'resumen';
+  document.querySelectorAll('.vista').forEach(s => s.classList.toggle('on', s.id === 'v-' + vista));
+  document.querySelectorAll('#nav a').forEach(a => a.classList.toggle('on', a.dataset.v === vista));
+  document.getElementById('titulo').textContent = TITULOS[vista];
+  if (DATOS && !pintadas[vista]) { pintadas[vista] = true; PINTAR[vista](DATOS); }
+  if (!sinScroll) window.scrollTo(0, 0);
+}
+window.addEventListener('hashchange', () => mostrar());
+
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const fmt = n => n == null ? '—' : Math.round(n).toLocaleString('es-ES');
+const corto = n => n >= 1e6 ? (n / 1e6).toLocaleString('es-ES', { maximumFractionDigits: 1 }) + ' M' : n >= 1e3 ? Math.round(n / 1e3).toLocaleString('es-ES') + ' mil' : String(Math.round(n));
+const eur = n => n == null ? '—' : Math.round(n).toLocaleString('es-ES') + ' €';
+const nombreCorto = s => s.replace(' - Búsqueda de embarazo', '').replace(' Health Coach', ' (@sop_reset)').replace(' Fertilidad', '').replace(' Nutrition', '');
+const el = (tag, attrs = {}, ...hijos) => { const e = document.createElement(tag); for (const [k, v] of Object.entries(attrs)) { if (k === 'class') e.className = v; else if (k === 'text') e.textContent = v; else e.setAttribute(k, v); } hijos.forEach(h => h != null && e.append(h)); return e; };
+function etiquetaEje(v) { const l = this.getLabelForValue(v); const max = innerWidth < 560 ? 14 : 30; return l.length > max ? l.slice(0, max - 1) + '…' : l; }
+
+function comunes(D) {
+  Chart.defaults.font.family = css('--font') || 'Inter, sans-serif';
+  Chart.defaults.font.size = 11.5;
+  Chart.defaults.color = css('--ink-3');
+  Chart.defaults.borderColor = css('--grid');
+  Chart.defaults.maintainAspectRatio = false;
+  Chart.defaults.plugins.legend.display = false;
+  Chart.defaults.animation.duration = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 450;
+  Object.assign(Chart.defaults.plugins.tooltip, { backgroundColor: css('--ink'), titleColor: css('--bg'), bodyColor: css('--bg'),
+    padding: 10, cornerRadius: 6, boxPadding: 4, usePointStyle: true, titleFont: { weight: '600' } });
+  const f = new Date(D.ultima_recogida + 'T12:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  document.getElementById('subtitulo').textContent = 'Datos del ' + f + ' · Biblioteca de anuncios de Meta, España';
+  const p = document.getElementById('pieLateral'); p.innerHTML = '';
+  p.append(el('div', { class: 'vivo' }, el('i'), document.createTextNode('Actualizado ' + D.generado.slice(8, 10) + '/' + D.generado.slice(5, 7) + ' · ' + D.generado.slice(11))),
+    el('div', { text: 'Comprueba datos nuevos cada ' + RECARGA_MIN + ' min' }), el('div', { text: D.fechas.length + (D.fechas.length === 1 ? ' día' : ' días') + ' de datos' }));
+}
+
+const etiquetas = (formato) => ({ id: 'etiquetas', afterDatasetsDraw(chart) {
+  const { ctx } = chart; ctx.save(); ctx.font = '500 11px ' + (css('--font') || 'sans-serif'); ctx.fillStyle = css('--ink-2'); ctx.textBaseline = 'middle';
+  chart.data.datasets.forEach((ds, i) => chart.getDatasetMeta(i).data.forEach((bar, j) => { const v = ds.data[j]; if (v == null || (Array.isArray(v) ? !v[1] : !v)) return; ctx.fillText(formato(v), bar.x + 6, bar.y); }));
+  ctx.restore(); } });
+const ejeX = (extra = {}) => ({ grid: { color: css('--grid'), drawTicks: false }, border: { display: false }, ticks: { padding: 6, maxTicksLimit: 5, ...extra } });
+const ejeY = () => ({ grid: { display: false }, border: { display: false }, ticks: { color: css('--ink-2'), callback: etiquetaEje, padding: 6 } });
+const colorCuenta = c => c.nuestra ? css('--accent') : css('--comp');
+
+function ranking(id, filas, valor, formato, tooltip) {
+  return new Chart(document.getElementById(id), { type: 'bar',
+    data: { labels: filas.map(c => nombreCorto(c.nombre)), datasets: [{ data: filas.map(valor), backgroundColor: filas.map(colorCuenta), borderRadius: 3, borderSkipped: 'start', barPercentage: .7, categoryPercentage: .92 }] },
+    options: { indexAxis: 'y', layout: { padding: { right: 84 } }, scales: { x: ejeX({ callback: v => corto(v) }), y: ejeY() },
+      plugins: { tooltip: { callbacks: { label: tooltip } } } }, plugins: [etiquetas(formato)] });
+}
+function doble(id, filas, etiqueta, a, b) {
+  return new Chart(document.getElementById(id), { type: 'bar',
+    data: { labels: filas.map(etiqueta), datasets: [
+      { label: 'Mari Carmen', data: filas.map(a), backgroundColor: css('--accent'), borderRadius: 2, borderSkipped: 'start', barPercentage: .82, categoryPercentage: .76, borderColor: css('--panel'), borderWidth: { bottom: 1 } },
+      { label: 'Competencia', data: filas.map(b), backgroundColor: css('--dark-series'), borderRadius: 2, borderSkipped: 'start', barPercentage: .82, categoryPercentage: .76 }] },
+    options: { indexAxis: 'y', scales: { x: ejeX({ callback: v => v + ' %' }), y: ejeY() },
+      plugins: { tooltip: { mode: 'index', intersect: false, callbacks: { label: c => ' ' + c.dataset.label + ': ' + c.raw + ' %' } } } } });
+}
+const pctEmbudos = D => { const tN = D.embudos.reduce((s, x) => s + x.nosotras, 0) || 1, tC = D.embudos.reduce((s, x) => s + x.competencia, 0) || 1;
+  return D.embudos.map(x => ({ tipo: x.tipo, n: Math.round(100 * x.nosotras / tN), c: Math.round(100 * x.competencia / tC) })); };
+
+const cab = cols => el('thead', {}, el('tr', {}, ...cols.map(([t, n]) => el('th', { class: n ? 'num' : '', text: t }))));
+const celdaCuenta = nombre => el('td', {}, el('span', { class: 'cuenta' }, el('i'), document.createTextNode(nombreCorto(nombre))));
+const filaAnuncio = (a, conAlcance, corta) => el('tr', { class: a.nuestra ? 'nos' : '' },
+  celdaCuenta(a.cuenta),
+  conAlcance ? el('td', { class: 'num', text: fmt(a.alcance) }) : null,
+  el('td', { class: 'num', text: a.dias != null ? a.dias + ' días' : '—' }),
+  el('td', {}, el('span', { class: 'etq', text: a.video ? 'Vídeo · ' + a.video : 'Imagen' })),
+  el('td', {}, el('span', { class: 'etq', text: a.embudo })),
+  el('td', { class: 'texto', text: a.txt ? a.txt.slice(0, corta ? 120 : 190) + (a.txt.length > (corta ? 120 : 190) ? '…' : '') : 'Anuncio de vídeo sin texto' }),
+  el('td', { class: 'num' }, el('a', { class: 'ver', href: 'https://www.facebook.com/ads/library/?id=' + a.id, target: '_blank', rel: 'noopener', text: 'Ver →' })));
+const tabla = (id, cols, filas, vacio) => { const c = document.getElementById(id);
+  c.append(filas.length ? el('table', {}, cab(cols), el('tbody', {}, ...filas)) : el('div', { class: 'vacio', text: vacio })); };
+
+const PINTAR = {
+  resumen(D) {
+    const nos = D.cuentas.find(c => c.nuestra), comp = D.cuentas.filter(c => !c.nuestra);
+    const suma = k => comp.reduce((s, c) => s + (c[k] || 0), 0);
+    const lider = [...comp].sort((a, b) => b.alcance_top - a.alcance_top)[0];
+    const kp = [
+      ['Anuncios activos', fmt(nos.activos), 'Media de la competencia: <b>' + fmt(suma('activos') / comp.length) + '</b>', true],
+      ['Alcance top 5', corto(nos.alcance_top).replace(' mil', '<small>mil</small>').replace(' M', '<small>M</small>'), '<b>×' + (nos.alcance_top / Math.max(1, lider.alcance_top)).toLocaleString('es-ES', { maximumFractionDigits: 1 }) + '</b> frente a ' + nombreCorto(lider.nombre)],
+      ['Inversión estimada', corto(nos.inv_min).replace(' mil', '') + '–' + corto(nos.inv_max).replace(' mil', '') + '<small>mil €</small>', 'Competencia junta: <b>' + corto(suma('inv_min')) + '–' + corto(suma('inv_max')) + ' €</b>'],
+      ['Nuevos de la competencia', fmt(suma('nuevos7')), 'Últimos 7 días · <b>' + fmt(suma('nuevos30')) + '</b> en 30 días'],
+    ];
+    const k = document.getElementById('kpis');
+    kp.forEach(([l, v, n, m]) => { const d = el('div', { class: 'kpi' + (m ? ' marca-kpi' : '') }, el('div', { class: 'lbl', text: l }), el('div', { class: 'val' }), el('div', { class: 'nota' }));
+      d.children[1].innerHTML = v; d.children[2].innerHTML = n; k.append(d); });
+    const filas = [...D.cuentas].filter(c => c.alcance_top).sort((a, b) => b.alcance_top - a.alcance_top);
+    ranking('rAlcance', filas, c => c.alcance_top, v => corto(v), c => ' ' + fmt(c.raw) + ' personas');
+    doble('rEmbudos', pctEmbudos(D), x => x.tipo, x => x.n, x => x.c);
+    tabla('rTop', [['Cuenta'], ['Alcance', 1], ['Activo', 1], ['Formato'], ['Destino'], ['Texto'], ['', 1]],
+      D.anuncios.filter(a => a.alcance).slice(0, 5).map(a => filaAnuncio(a, true, true)), 'Sin anuncios con alcance medido.');
+  },
+  publicidad(D) {
+    const filas = [...D.cuentas].filter(c => c.alcance_top).sort((a, b) => b.alcance_top - a.alcance_top);
+    ranking('cAlcance', filas, c => c.alcance_top, v => corto(v), c => ' ' + fmt(c.raw) + ' personas');
+    const e = D.estimacion;
+    document.getElementById('descInversion').textContent = 'Gasto acumulado estimado de sus anuncios principales (alcance × ' + String(e.frecuencia).replace('.', ',') + ' × CPM ' + (e.cpm_real ? e.cpm_real + ' € real' : e.cpm_min + '–' + e.cpm_max + ' €') + '). Meta no publica el gasto.';
+    ranking('cInversion', filas, c => [c.inv_min, c.inv_max], v => corto(v[0]) + '–' + corto(v[1]) + ' €', c => ' Entre ' + eur(c.raw[0]) + ' y ' + eur(c.raw[1]));
+    const pa = [...D.cuentas].sort((a, b) => b.creatividades - a.creatividades);
+    new Chart(document.getElementById('cActivos'), { type: 'bar',
+      data: { labels: pa.map(c => nombreCorto(c.nombre)), datasets: [
+        { label: 'Nuevos (menos de 30 días)', data: pa.map(c => Math.min(c.nuevos30, c.creatividades)), backgroundColor: css('--dark-series'), borderRadius: 2, borderSkipped: false, borderColor: css('--panel'), borderWidth: { right: 2 }, barPercentage: .7 },
+        { label: 'Veteranos (30 días o más)', data: pa.map(c => Math.max(0, c.creatividades - c.nuevos30)), backgroundColor: css('--comp'), borderRadius: 2, borderSkipped: false, barPercentage: .7 }] },
+      options: { indexAxis: 'y', scales: { x: { ...ejeX(), stacked: true }, y: { ...ejeY(), stacked: true } },
+        plugins: { tooltip: { mode: 'index', callbacks: { label: c => ' ' + c.dataset.label + ': ' + c.raw, footer: it => { const c = pa[it[0].dataIndex]; return c.mas_antiguo != null ? 'El más antiguo: ' + c.mas_antiguo + ' días' : ''; } } } } } });
+    const nos = D.cuentas.find(c => c.nuestra);
+    const serie = [nos, ...D.cuentas.filter(c => !c.nuestra).sort((a, b) => b.activos - a.activos).slice(0, 3)];
+    const col = [css('--accent'), css('--dark-series'), css('--ink-3'), css('--comp')];
+    const trazo = [[], [], [5, 4], [2, 3]];
+    document.getElementById('leyEvol').append(...serie.map((c, i) => el('span', {}, el('i', { style: 'background:' + col[i] }), document.createTextNode(nombreCorto(c.nombre)))));
+    document.getElementById('avisoEvol').hidden = D.fechas.length > 1;
+    new Chart(document.getElementById('cEvolucion'), { type: 'line',
+      data: { labels: D.fechas.map(f => new Date(f + 'T12:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })),
+        datasets: serie.map((c, i) => ({ label: nombreCorto(c.nombre), data: D.fechas.map(f => ((D.historia[c.slug] || []).find(h => h.fecha === f) || {}).activos ?? null),
+          borderColor: col[i], backgroundColor: col[i], borderWidth: i ? 1.75 : 2.5, borderDash: trazo[i], pointRadius: 3.5, pointHoverRadius: 5, pointBorderColor: css('--panel'), pointBorderWidth: 1.5, tension: .25, spanGaps: true })) },
+      options: { interaction: { mode: 'index', intersect: false }, scales: { y: { beginAtZero: true, grid: { color: css('--grid'), drawTicks: false }, border: { display: false }, ticks: { padding: 6 } }, x: { grid: { display: false }, border: { display: false } } },
+        plugins: { tooltip: { callbacks: { label: c => ' ' + c.dataset.label + ': ' + c.raw } } } } });
+  },
+  contenido(D) {
+    const t = [...D.temas].sort((x, y) => (y.pct_competencia + y.pct_nosotras) - (x.pct_competencia + x.pct_nosotras));
+    doble('cTemas', t, x => x.tema, x => x.pct_nosotras, x => x.pct_competencia);
+    doble('cEmbudos', pctEmbudos(D), x => x.tipo, x => x.n, x => x.c);
+  },
+  anuncios(D) {
+    tabla('tTop', [['Cuenta'], ['Alcance', 1], ['Activo', 1], ['Formato'], ['Destino'], ['Texto del anuncio'], ['', 1]],
+      D.anuncios.filter(a => a.alcance).slice(0, 15).map(a => filaAnuncio(a, true)), 'Sin anuncios con alcance medido.');
+    const vistos = new Set();
+    const vet = D.anuncios.filter(a => !a.nuestra && a.dias >= 30).sort((a, b) => b.dias - a.dias)
+      .filter(a => { const k = a.cuenta + a.txt.slice(0, 60); if (vistos.has(k)) return false; vistos.add(k); return true; });
+    tabla('tVeteranos', [['Cuenta'], ['Activo', 1], ['Formato'], ['Destino'], ['Texto del anuncio'], ['', 1]],
+      vet.slice(0, 15).map(a => filaAnuncio(a, false)), 'Ninguna competidora tiene anuncios de más de 30 días.');
+  },
+  informe(D) {
+    const c = document.getElementById('informe');
+    if (!D.resumen_semanal) { c.append(el('div', { class: 'vacio', text: 'El primer informe semanal llega el lunes a las 9:00.' })); return; }
+    c.innerHTML = D.resumen_semanal.html;
+    c.prepend(el('p', { class: 'fecha', text: 'Informe · ' + D.resumen_semanal.archivo.replace('.md', '') }));
+  },
+  cuentas(D) {
+    document.getElementById('descCuentas').textContent = D.instagram ? 'Incluye datos públicos de Instagram.' : 'Datos de publicidad. Los reels de Instagram de la competencia aparecerán cuando haya sesión de Instagram en Chrome.';
+    tabla('tCuentas', [['Cuenta'], ['Tipo'], ['Activos', 1], ['Nuevos 7 d', 1], ['Nuevos 30 d', 1], ['Más antiguo', 1], ['Alcance top 5', 1], ['Inversión estimada', 1], ['Destino habitual'], ['Instagram']],
+      [...D.cuentas].sort((a, b) => b.alcance_top - a.alcance_top).map(c => el('tr', { class: c.nuestra ? 'nos' : '' },
+        celdaCuenta(c.nombre), el('td', {}, el('span', { class: 'etq', text: c.nuestra ? 'Nosotras' : c.tipo[0].toUpperCase() + c.tipo.slice(1) })),
+        el('td', { class: 'num', text: fmt(c.activos) }), el('td', { class: 'num', text: fmt(c.nuevos7) }), el('td', { class: 'num', text: fmt(c.nuevos30) }),
+        el('td', { class: 'num', text: c.mas_antiguo != null ? c.mas_antiguo + ' días' : '—' }), el('td', { class: 'num', text: fmt(c.alcance_top) }),
+        el('td', { class: 'num', text: c.alcance_top ? corto(c.inv_min) + '–' + corto(c.inv_max) + ' €' : '—' }), el('td', { text: c.embudo || '—' }),
+        el('td', {}, c.ig ? el('a', { class: 'ver', href: 'https://www.instagram.com/' + c.ig + '/', target: '_blank', rel: 'noopener', text: '@' + c.ig }) : '—'))), 'Sin cuentas.');
+  },
+};
+
+actualizar();
+</script>
